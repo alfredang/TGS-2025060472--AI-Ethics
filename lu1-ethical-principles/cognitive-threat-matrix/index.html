@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognitive Threat Matrix - AI Risk Scenario Generator</title>
+  <style>
+    /* Dark theme (default) */
+    :root, [data-theme="dark"] {
+      --bg: #1a1a2e;
+      --card-bg: #16213e;
+      --border: #3a3a5c;
+      --text: #e0e0e0;
+      --text-muted: #999;
+      --accent: #e74c3c;
+      --accent-light: #ff6b6b;
+      --green: #4ade80;
+      --shadow: rgba(0,0,0,0.3);
+      --input-bg: #0f1729;
+      --chip-bg: #1e2a45;
+      --chip-hover: #2a3a5c;
+      --error-bg: #3b1111;
+      --error-border: #7f1d1d;
+      --error-text: #fca5a5;
+      --heading-color: #ff6b6b;
+    }
+
+    /* Light theme */
+    [data-theme="light"] {
+      --bg: #f5f0e8;
+      --card-bg: #fffdf7;
+      --border: #c4b99a;
+      --text: #2c2c2c;
+      --text-muted: #666;
+      --accent: #8b1a1a;
+      --accent-light: #c0392b;
+      --green: #276749;
+      --shadow: rgba(0,0,0,0.08);
+      --input-bg: #fff;
+      --chip-bg: #fff;
+      --chip-hover: #f0ebe0;
+      --error-bg: #fee2e2;
+      --error-border: #fca5a5;
+      --error-text: #991b1b;
+      --heading-color: #8b1a1a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* API Key Section */
+    .api-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .api-section .field {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .api-section label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .api-section input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    .api-section input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .api-status {
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      height: 1.2rem;
+    }
+
+    .api-status.valid { color: var(--green); }
+    .api-status.invalid { color: var(--accent-light); }
+
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      z-index: 100;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.5rem 0.9rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+    }
+
+    .theme-toggle .label {
+      font-size: 0.75rem;
+      font-family: Georgia, serif;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Threat Matrix Grid */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .matrix-grid { grid-template-columns: 1fr; }
+    }
+
+    .threat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .threat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow);
+    }
+
+    .threat-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent), 0 6px 20px var(--shadow);
+    }
+
+    .threat-card .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .threat-card .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .threat-card[data-threat="hallucination"] .card-icon { background: #3b1111; }
+    [data-theme="dark"] .threat-card[data-threat="skewed-data"] .card-icon { background: #0f2444; }
+    [data-theme="dark"] .threat-card[data-threat="verification"] .card-icon { background: #3b2f0f; }
+    [data-theme="dark"] .threat-card[data-threat="ethical"] .card-icon { background: #2d1854; }
+    [data-theme="light"] .threat-card[data-threat="hallucination"] .card-icon { background: #fee2e2; }
+    [data-theme="light"] .threat-card[data-threat="skewed-data"] .card-icon { background: #dbeafe; }
+    [data-theme="light"] .threat-card[data-threat="verification"] .card-icon { background: #fef3c7; }
+    [data-theme="light"] .threat-card[data-threat="ethical"] .card-icon { background: #e9d5ff; }
+
+    .threat-card h3 {
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .threat-card h3 .arrow {
+      color: var(--accent);
+      font-weight: 700;
+      margin: 0 0.2rem;
+    }
+
+    .threat-card .bias-label {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      line-height: 1.5;
+    }
+
+    .threat-card .bias-label strong {
+      color: var(--accent);
+    }
+
+    .threat-card .risk-label {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .threat-card .risk-label strong {
+      color: var(--accent-light);
+    }
+
+    /* Sample Questions */
+    .sample-questions {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .sample-questions.visible { display: block; }
+
+    .sample-questions h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+
+    .question-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .question-chip {
+      background: var(--chip-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      line-height: 1.4;
+    }
+
+    .question-chip:hover {
+      background: var(--chip-hover);
+      border-color: var(--accent);
+    }
+
+    /* Custom Prompt */
+    .prompt-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .prompt-section h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .prompt-row {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .prompt-row textarea {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 60px;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    .prompt-row textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .generate-btn {
+      padding: 0.7rem 1.8rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: Georgia, serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+      align-self: flex-end;
+    }
+
+    .generate-btn:hover { background: #6b1414; }
+    .generate-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    /* Output */
+    .output-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: none;
+    }
+
+    .output-section.visible { display: block; }
+
+    .output-section h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+
+    .output-content {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .output-content p { margin-bottom: 0.8rem; }
+
+    /* Loading spinner */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem 0;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* Blueprint border decoration */
+    .blueprint-border {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .blueprint-border.top { top: 8px; left: 8px; right: 8px; height: 2px; background: rgba(180,170,140,0.3); }
+    .blueprint-border.bottom { bottom: 8px; left: 8px; right: 8px; height: 2px; background: rgba(180,170,140,0.3); }
+    .blueprint-border.left { top: 8px; bottom: 8px; left: 8px; width: 2px; background: rgba(180,170,140,0.3); }
+    .blueprint-border.right { top: 8px; bottom: 8px; right: 8px; width: 2px; background: rgba(180,170,140,0.3); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <span id="themeIcon">&#x2600;&#xFE0F;</span>
+    <span class="label" id="themeLabel">Light</span>
+  </button>
+
+  <div class="blueprint-border top"></div>
+  <div class="blueprint-border bottom"></div>
+  <div class="blueprint-border left"></div>
+  <div class="blueprint-border right"></div>
+
+  <div class="container">
+    <header>
+      <h1>The Cognitive Threat Matrix</h1>
+      <p>Explore generative AI risks through the lens of cognitive biases. Select a threat category, choose a sample scenario or write your own, and generate detailed risk analyses powered by Google Gemini.</p>
+    </header>
+
+    <!-- API Key -->
+    <div class="api-section">
+      <div class="field">
+        <label for="apiKey">Google Gemini API Key</label>
+        <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+        <div class="api-status" id="apiStatus"></div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- Threat Matrix -->
+    <div class="matrix-grid">
+      <div class="threat-card" data-threat="hallucination" onclick="selectThreat(this)">
+        <div class="card-header">
+          <div class="card-icon">&#x1F916;</div>
+          <h3>Automation Bias <span class="arrow">&#x27A1;</span> The Hallucination Threat</h3>
+        </div>
+        <p class="bias-label"><strong>Bias:</strong> The instinct to blindly trust system-generated reports to meet tight deadlines.</p>
+        <p class="risk-label"><strong>Risk:</strong> Accepting incorrect, hallucinatory AI outputs as factual, leading to flawed executive decisions.</p>
+      </div>
+
+      <div class="threat-card" data-threat="skewed-data" onclick="selectThreat(this)">
+        <div class="card-header">
+          <div class="card-icon">&#x1F4CA;</div>
+          <h3>Confirmation Bias <span class="arrow">&#x27A1;</span> The Skewed Data Threat</h3>
+        </div>
+        <p class="bias-label"><strong>Bias:</strong> Giving weight only to evidence that supports preconceived hypotheses.</p>
+        <p class="risk-label"><strong>Risk:</strong> Training models on narrow, incomplete demographics, generating biased outputs that alienate users.</p>
+      </div>
+
+      <div class="threat-card" data-threat="verification" onclick="selectThreat(this)">
+        <div class="card-header">
+          <div class="card-icon">&#x26A0;</div>
+          <h3>Overconfidence <span class="arrow">&#x27A1;</span> The Verification Failure</h3>
+        </div>
+        <p class="bias-label"><strong>Bias:</strong> Believing past success guarantees future accuracy.</p>
+        <p class="risk-label"><strong>Risk:</strong> Failing to implement third-party fact-checking on AI outputs, exposing the organization to deepfakes and misinformation.</p>
+      </div>
+
+      <div class="threat-card" data-threat="ethical" onclick="selectThreat(this)">
+        <div class="card-header">
+          <div class="card-icon">&#x1F9E0;</div>
+          <h3>Groupthink <span class="arrow">&#x27A1;</span> The Ethical Blindspot</h3>
+        </div>
+        <p class="bias-label"><strong>Bias:</strong> Rushing to consensus without sufficient debate.</p>
+        <p class="risk-label"><strong>Risk:</strong> System justification that overrides ethical safeguards, prioritizing short-term tech adoption over long-term creative integrity and workforce reskilling.</p>
+      </div>
+    </div>
+
+    <!-- Sample Questions -->
+    <div class="sample-questions" id="sampleQuestions">
+      <h3 id="sampleTitle">Sample Scenarios</h3>
+      <div class="question-chips" id="questionChips"></div>
+    </div>
+
+    <!-- Custom Prompt -->
+    <div class="prompt-section">
+      <h3>Describe Your Scenario or Ask a Question</h3>
+      <div class="prompt-row">
+        <textarea id="userPrompt" placeholder="Select a threat category above, pick a sample question, or type your own scenario..."></textarea>
+        <button class="generate-btn" id="generateBtn" onclick="generateScenario()" disabled>Generate</button>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-section" id="outputSection">
+      <h3 id="outputTitle">Risk Analysis</h3>
+      <div class="output-content" id="outputContent"></div>
+    </div>
+
+    <footer>
+      Cognitive Threat Matrix &mdash; AI Risk Scenario Generator
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeButton(next);
+    }
+
+    function updateThemeButton(theme) {
+      document.getElementById('themeIcon').innerHTML = theme === 'dark' ? '&#x2600;&#xFE0F;' : '&#x1F319;';
+      document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Restore saved theme or default to dark
+    (function() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeButton(saved);
+    })();
+
+    const SAMPLE_QUESTIONS = {
+      'hallucination': [
+        'A hospital uses AI to generate patient discharge summaries. What could go wrong if no one verifies the output?',
+        'A law firm relies on AI-generated case briefs to save time. How might hallucinated legal citations affect a court case?',
+        'An AI-generated financial report is presented to the board with fabricated statistics. Walk through the consequences.',
+        'A journalist publishes an AI-written article containing false quotes. What are the reputational and legal risks?',
+        'A student submits an AI-generated research paper with invented references. How does this affect academic integrity?'
+      ],
+      'skewed-data': [
+        'A hiring tool trained mostly on data from one demographic rejects qualified diverse candidates. Analyze the impact.',
+        'A healthcare AI trained on data from one ethnic group misdiagnoses patients from underrepresented groups. What are the risks?',
+        'A credit scoring model trained on historically biased lending data perpetuates discrimination. Explore the scenario.',
+        'An AI content recommendation system creates filter bubbles that radicalize users. How does confirmation bias play a role?',
+        'A facial recognition system performs poorly on certain skin tones due to training data gaps. What are the consequences?'
+      ],
+      'verification': [
+        'An organization deploys an AI content moderation tool without ongoing accuracy audits. What happens when it fails?',
+        'A deepfake video of a CEO goes viral and the company has no AI-detection tools in place. Walk through the crisis.',
+        'A company trusts its AI fraud detection system completely after initial success, then sophisticated attacks slip through.',
+        'An AI-generated medical image is used for diagnosis without radiologist review. What are the patient safety implications?',
+        'A marketing team auto-publishes AI-generated social media posts without human review. Describe potential brand disasters.'
+      ],
+      'ethical': [
+        'A company rushes to adopt AI-generated art for all marketing, displacing its creative team. Analyze the long-term effects.',
+        'Leadership fast-tracks an AI surveillance system without consulting ethics or legal teams. What could go wrong?',
+        'A school district adopts AI grading without teacher input, and no one questions the decision. Explore the consequences.',
+        'An AI system recommends layoffs based on productivity metrics, and management accepts without debate. Analyze the risks.',
+        'A tech company skips bias testing to beat competitors to market. How does groupthink enable this ethical failure?'
+      ]
+    };
+
+    let selectedThreat = null;
+
+    // API key validation
+    const apiKeyInput = document.getElementById('apiKey');
+    const apiStatus = document.getElementById('apiStatus');
+    const generateBtn = document.getElementById('generateBtn');
+
+    apiKeyInput.addEventListener('input', () => {
+      const key = apiKeyInput.value.trim();
+      if (key.startsWith('AIza') && key.length > 20) {
+        apiStatus.textContent = 'Key format looks valid';
+        apiStatus.className = 'api-status valid';
+        updateGenerateBtn();
+      } else if (key.length > 0) {
+        apiStatus.textContent = 'Key should start with AIza';
+        apiStatus.className = 'api-status invalid';
+        updateGenerateBtn();
+      } else {
+        apiStatus.textContent = '';
+        apiStatus.className = 'api-status';
+        updateGenerateBtn();
+      }
+    });
+
+    function updateGenerateBtn() {
+      const key = apiKeyInput.value.trim();
+      const prompt = document.getElementById('userPrompt').value.trim();
+      generateBtn.disabled = !(key.startsWith('AIza') && key.length > 20 && prompt.length > 0);
+    }
+
+    document.getElementById('userPrompt').addEventListener('input', updateGenerateBtn);
+
+    function selectThreat(card) {
+      document.querySelectorAll('.threat-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedThreat = card.dataset.threat;
+
+      const sampleSection = document.getElementById('sampleQuestions');
+      const chipsContainer = document.getElementById('questionChips');
+      const title = document.getElementById('sampleTitle');
+
+      const threatNames = {
+        'hallucination': 'The Hallucination Threat',
+        'skewed-data': 'The Skewed Data Threat',
+        'verification': 'The Verification Failure',
+        'ethical': 'The Ethical Blindspot'
+      };
+
+      title.textContent = `Sample Scenarios: ${threatNames[selectedThreat]}`;
+      chipsContainer.innerHTML = '';
+
+      SAMPLE_QUESTIONS[selectedThreat].forEach(q => {
+        const chip = document.createElement('button');
+        chip.className = 'question-chip';
+        chip.textContent = q;
+        chip.onclick = () => {
+          document.getElementById('userPrompt').value = q;
+          updateGenerateBtn();
+        };
+        chipsContainer.appendChild(chip);
+      });
+
+      sampleSection.classList.add('visible');
+    }
+
+    async function generateScenario() {
+      const apiKey = apiKeyInput.value.trim();
+      const userPrompt = document.getElementById('userPrompt').value.trim();
+      const outputSection = document.getElementById('outputSection');
+      const outputContent = document.getElementById('outputContent');
+      const outputTitle = document.getElementById('outputTitle');
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!apiKey || !userPrompt) return;
+
+      errorMsg.classList.remove('visible');
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+      outputSection.classList.add('visible');
+      outputContent.innerHTML = '<div class="loading"><div class="spinner"></div><span>Analyzing risk scenario...</span></div>';
+
+      const threatContext = {
+        'hallucination': 'Automation Bias and The Hallucination Threat: the instinct to blindly trust AI-generated outputs, accepting incorrect or fabricated information as factual.',
+        'skewed-data': 'Confirmation Bias and The Skewed Data Threat: giving weight only to evidence that supports preconceived hypotheses, training models on narrow or incomplete data.',
+        'verification': 'Overconfidence and The Verification Failure: believing past AI success guarantees future accuracy, failing to implement fact-checking and verification.',
+        'ethical': 'Groupthink and The Ethical Blindspot: rushing to consensus without debate, overriding ethical safeguards for short-term adoption.'
+      };
+
+      const systemPrompt = `You are an AI risk analyst specializing in the Cognitive Threat Matrix framework. Your role is to generate detailed, realistic risk scenarios for generative AI threats.
+
+${selectedThreat ? `The user is exploring: ${threatContext[selectedThreat]}` : 'Analyze the scenario through the lens of cognitive biases and AI risks.'}
+
+Structure your response clearly with:
+1. **Scenario Overview** - A vivid, realistic description of the situation
+2. **Cognitive Bias at Play** - Which biases are involved and how they manifest
+3. **Risk Escalation** - How the situation worsens if unchecked
+4. **Real-World Impact** - Concrete consequences (financial, reputational, safety, legal)
+5. **Mitigation Strategies** - Practical steps to prevent or address the risk
+
+Be specific, use concrete examples, and make the scenario feel real and urgent. Keep the tone professional but accessible.`;
+
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: {
+              temperature: 0.8,
+              maxOutputTokens: 1500
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const text = data.candidates[0].content.parts[0].text;
+
+        outputTitle.textContent = 'Risk Analysis';
+        outputContent.innerHTML = formatMarkdown(text);
+
+      } catch (err) {
+        errorMsg.textContent = `Error: ${err.message}`;
+        errorMsg.classList.add('visible');
+        outputSection.classList.remove('visible');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate';
+        updateGenerateBtn();
+      }
+    }
+
+    function formatMarkdown(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^### (.+)$/gm, '<h4 style="margin:1rem 0 0.5rem;color:var(--heading-color);">$1</h4>')
+        .replace(/^## (.+)$/gm, '<h3 style="margin:1.2rem 0 0.5rem;color:var(--heading-color);">$1</h3>')
+        .replace(/^# (.+)$/gm, '<h3 style="margin:1.2rem 0 0.5rem;color:var(--heading-color);">$1</h3>')
+        .replace(/^- (.+)$/gm, '<li style="margin-left:1.5rem;margin-bottom:0.3rem;">$1</li>')
+        .replace(/^\d+\.\s(.+)$/gm, '<li style="margin-left:1.5rem;margin-bottom:0.3rem;">$1</li>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>');
+    }
+  </script>
+</body>
+</html>
