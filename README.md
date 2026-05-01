@@ -10,6 +10,8 @@
 
 **A hands-on interactive course covering ethical principles, privacy techniques, and best practices for responsible generative AI.**
 
+Activities for the WSQ course [Responsible Generative AI Basics (TGS-2025060472)](https://www.tertiarycourses.com.sg/wsq-responsible-generative-ai-basics.html).
+
 [Live Demo](https://alfredang.github.io/TGS-2025060472--AI-Ethics/) · [Report Bug](https://github.com/alfredang/TGS-2025060472--AI-Ethics/issues) · [Request Feature](https://github.com/alfredang/TGS-2025060472--AI-Ethics/issues)
 
 </div>
@@ -20,7 +22,7 @@
 
 ## About
 
-This course provides a foundational understanding of responsible generative AI practices through **14 interactive web-based activities** across three Learning Units. Learners explore ethical principles, privacy techniques, and best practices for developing and deploying generative AI systems responsibly.
+This repository contains the activities for the WSQ course **[Responsible Generative AI Basics (TGS-2025060472)](https://www.tertiarycourses.com.sg/wsq-responsible-generative-ai-basics.html)**, providing a foundational understanding of responsible generative AI practices through **14 interactive web-based activities** across three Learning Units. Learners explore ethical principles, privacy techniques, and best practices for developing and deploying generative AI systems responsibly.
 
 ### Key Features
 
