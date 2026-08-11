@@ -1,2 +1,20 @@
 .DS_Store
 .playwright-mcp/
+# WSQ assessment is CONFIDENTIAL — Drive only, never GitHub
+assessment/
+# Reference material (old decks, TMS pulls) is large and internal
+reference/
+
+# Internal Drive link — never commit
+.env
+
+# Assessment CONTENT in source form is as confidential as the papers themselves
+.claude/skills/courseware-build/build/assessment_content.py
+.claude/skills/courseware-build/build/build_assessment_course.py
+
+# Raw image extraction from the old master deck (212MB, internal only)
+.claude/skills/courseware-build/assets/ref/
+
+# Python bytecode
+__pycache__/
+*.pyc
