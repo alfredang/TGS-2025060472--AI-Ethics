@@ -2,6 +2,13 @@
 .playwright-mcp/
 # WSQ assessment is CONFIDENTIAL — Drive only, never GitHub
 assessment/
+# Trainer and assessment-governance documents are published to controlled Drive folders only.
+courseware/FG-*.docx
+courseware/FG-*.pdf
+courseware/AP-*.docx
+courseware/AP-*.pdf
+# Superseded courseware is retained locally and in controlled storage, not public GitHub.
+courseware/archive/
 # Reference material (old decks, TMS pulls) is large and internal
 reference/
 

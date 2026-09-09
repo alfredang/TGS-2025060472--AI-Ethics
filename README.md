@@ -10,7 +10,7 @@
 
 **A hands-on interactive course covering ethical principles, privacy techniques, and best practices for responsible generative AI.**
 
-Activities for the WSQ course [Responsible Generative AI Basics (TGS-2025060472)](https://www.tertiarycourses.com.sg/wsq-responsible-generative-ai-basics.html).
+Courseware and activities for **Responsible Generative AI Basics (TGS-2025060472)**. [View the current course listing](https://www.tertiarycourses.com.sg/wsq-ai-security-awareness.html).
 
 [Live Demo](https://tertiarycourses.github.io/TGS-2025060472-Responsible-Generative-AI-Basics/) · [Report Bug](https://github.com/tertiarycourses/TGS-2025060472-Responsible-Generative-AI-Basics/issues) · [Request Feature](https://github.com/tertiarycourses/TGS-2025060472-Responsible-Generative-AI-Basics/issues)
 
@@ -22,7 +22,9 @@ Activities for the WSQ course [Responsible Generative AI Basics (TGS-2025060472)
 
 ## About
 
-This repository contains the activities for the WSQ course **[Responsible Generative AI Basics (TGS-2025060472)](https://www.tertiarycourses.com.sg/wsq-responsible-generative-ai-basics.html)**, providing a foundational understanding of responsible generative AI practices through **14 interactive web-based activities** across three Learning Units. Learners explore ethical principles, privacy techniques, and best practices for developing and deploying generative AI systems responsibly.
+This repository contains the learner-facing courseware and activities for **Responsible Generative AI Basics (TGS-2025060472)**, aligned to **Responsible AI and Generative AI Practices (ICT-BAS-0055-1.1)**. The one-day course comprises **7 instructional hours and 1 assessment hour**, with **14 interactive browser activities** across three Learning Units.
+
+The current Tertiary Infotech listing uses the marketing title **AI Security Awareness** for the same TGS reference. Funding validity shown on the listing is **17 November 2025 to 16 November 2027**.
 
 ### Key Features
 
@@ -130,15 +132,15 @@ TGS-2025060472-Responsible-Generative-AI-Basics/
 
 ## WSQ Courseware
 
-All three artifacts are generated from one content module
-(`.claude/skills/courseware-build/build/course_data.py` + `data_domain1..3.py` +
-`data_insights.py`), so the deck, Lesson Plan and Learner Guide can never drift apart.
+The public learner package is aligned to the accredited Course Proposal, including all knowledge statements **K1–K4**, ability statements **A1–A6**, the 420-minute instructional programme, and the 60-minute assessment block.
 
 | Artifact | File |
 |---|---|
-| Trainer slide deck | `courseware/Responsible Generative AI Basics-v12.pptx` (+ `.pdf`) — 77 slides |
-| Lesson Plan | `courseware/LP-Responsible Generative AI Basics.docx` (+ `.pdf`) — v3.1 |
-| Learner Guide | `courseware/LG-Responsible Generative AI Basics.docx` (+ `.pdf`) — v3.1 |
+| Trainer slide deck | `courseware/Responsible Generative AI Basics-v13.pptx` (+ `.pdf`) — 82 slides |
+| Lesson Plan | `courseware/LP-Responsible Generative AI Basics.docx` (+ `.pdf`) — v3.2 |
+| Learner Guide | `courseware/LG-Responsible Generative AI Basics.docx` (+ `.pdf` and `.md`) — v3.2 |
+
+The Facilitator Guide, Assessment Plan, assessment papers, marking guides and answer keys are controlled trainer/assessment records. They are distributed through restricted Google Drive and LMS-TMS locations and are intentionally excluded from this public repository.
 
 Rebuild everything with:
 
@@ -158,7 +160,7 @@ Visit the [Course Hub](https://tertiarycourses.github.io/TGS-2025060472-Responsi
 
 ```bash
 git clone https://github.com/tertiarycourses/TGS-2025060472-Responsible-Generative-AI-Basics.git
-cd TGS-2025060472--AI-Ethics
+cd TGS-2025060472-Responsible-Generative-AI-Basics
 python3 -m http.server 8000
 ```
 
